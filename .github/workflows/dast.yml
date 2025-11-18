@@ -13,17 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install dependencies
-        run: pip install flask
-
-      - name: Start Python app
-        run: python app.py &
-
-      - name: Wait for server
-        run: sleep 20
+      - name: Build and run app container
+        run: |
+          docker build -t myapp .
+          docker run -d -p 8000:8000 myapp
 
       - name: ZAP Scan
         uses: zaproxy/action-baseline@v0.15.0
         with:
-          target: 'http://localhost:8000'
+          target: 'http://host.docker.internal:8000'
           cmd_options: '-a'
